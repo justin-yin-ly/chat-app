@@ -99,9 +99,9 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     colorPick: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         margin: 10
     },
     option1: {
