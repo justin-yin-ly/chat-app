@@ -1,28 +1,41 @@
 import { useState } from "react";
-import { StyleSheet, View, TextInput, Text, TouchableOpacity, ImageBackground } from "react-native";
+import { Alert, StyleSheet, View, TextInput, Text, TouchableOpacity, ImageBackground } from "react-native";
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 const Start = ({ navigation }) => {
-    const [name, setName] = useState('');
-    const [chatColor, setChatColor] = useState('');
+  const auth = getAuth();
+  const [name, setName] = useState('');
+  const [chatColor, setChatColor] = useState('');
 
-    return (
-      <ImageBackground source={require('../img/BackgroundImage.png')} style={styles.backgroundImage} resizeMode="cover">
-        <View style={styles.container}>
-          
-          <View>
-            <Text style={styles.title}>Chat App</Text>
+  const signInUser = () => {
+    signInAnonymously(auth)
+      .then(result => {
+        navigation.navigate("Chat", {userID: result.user.uid, name: name, chatColor: chatColor });
+        Alert.alert("Signed in Successfully!");
+      })
+      .catch((error) => {
+        Alert.alert("Unable to sign in, try later again.");
+      })
+  }
+
+  return (
+    <ImageBackground source={require('../img/BackgroundImage.png')} style={styles.backgroundImage} resizeMode="cover">
+      <View style={styles.container}>
+        
+        <View>
+          <Text style={styles.title}>Chat App</Text>
+        </View>
+        <View style={styles.content}>
+          <View style={styles.border}>
+            <TextInput
+              style={[styles.text, styles.opacity]}
+              value={name}
+              onChangeText={setName}
+              placeholder='Your Name'
+            />
           </View>
-          <View style={styles.content}>
-            <View style={styles.border}>
-              <TextInput
-                style={[styles.text, styles.opacity]}
-                value={name}
-                onChangeText={setName}
-                placeholder='Your Name'
-              />
-            </View>
-            <Text style={styles.text}>Choose Background Color:</Text>
-            <View style={styles.colorButtons}>
+          <Text style={styles.text}>Choose Background Color:</Text>
+          <View style={styles.colorButtons}>
               <TouchableOpacity style={[styles.colorPick,styles.option1]} onPress={() => setChatColor("#090C08")}>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.colorPick,styles.option2]} onPress={() => setChatColor("#474056")}>
@@ -31,17 +44,17 @@ const Start = ({ navigation }) => {
               </TouchableOpacity>
               <TouchableOpacity style={[styles.colorPick,styles.option4]} onPress={() => setChatColor("#B9C6AE")}>
               </TouchableOpacity>
-            </View>
-            <TouchableOpacity 
-              style={styles.chatButton}
-              onPress={() => navigation.navigate('Chat', {name: name, chatColor: chatColor})}
-            >
-              <Text style={styles.chatText}>Start Chatting</Text>
-            </TouchableOpacity>
           </View>
+          <TouchableOpacity 
+            style={styles.chatButton}
+            onPress={signInUser}
+          >
+            <Text style={styles.chatText}>Start Chatting</Text>
+          </TouchableOpacity>
         </View>
-      </ImageBackground>
-      );
+      </View>
+    </ImageBackground>
+    );
 }
 
 const styles = StyleSheet.create({

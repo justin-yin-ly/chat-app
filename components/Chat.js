@@ -1,32 +1,32 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, View, Text, KeyboardAvoidingView, Platform } from "react-native";
 import { Bubble, GiftedChat } from "react-native-gifted-chat";
+import { collection, query, orderBy, onSnapshot, addDoc } from "firebase/firestore";
 
-const Chat = ({route, navigation}) => {
+const Chat = ({db, route, navigation}) => {
     const [messages, setMessages] = useState([]);
-    const { name, chatColor } = route.params;
+    const { name, chatColor, userID } = route.params;
 
     useEffect(() => {
-        setMessages([
-            {
-              _id: 1,
-              text: "Hello developer!",
-              createdAt: new Date(),
-              user: {
-                _id: 2,
-                name: "React Native",
-                avatar: "https://placeimg.com/140/140/any",
-              },
-            },
-            {
-                _id: 2,
-                text: 'Welcome to the chat.',
-                createdAt: new Date(),
-                system: true,
-              },
-        ]);
+      navigation.setOptions({ title: name})
 
-        navigation.setOptions({ title: name})
+      const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+      const unsubMessages = onSnapshot(q, (documentsSnapshot) => {
+        let newMessages = [];
+        documentsSnapshot.forEach(doc => {
+          newMessages.push({            
+            id: doc.id,
+            ...doc.data(),
+            createdAt: new Date(doc.data().createdAt.toMillis())
+          })
+        });
+        setMessages(newMessages);
+      });
+  
+      // Clean up code
+      return () => {
+        if (unsubMessages) unsubMessages();
+      }
     }, []);
 
     const renderBubble = (props) => {
@@ -43,9 +43,9 @@ const Chat = ({route, navigation}) => {
         />
       }
 
-    const onSend = (newMessages) => {
-        setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
-    }
+      const onSend = (newMessages) => {
+        addDoc(collection(db, "messages"), newMessages[0])
+      }
 
     return(
         <View style={[styles.main, {backgroundColor: chatColor}]}> 
@@ -54,7 +54,8 @@ const Chat = ({route, navigation}) => {
               renderBubble={renderBubble}
               onSend={messages => onSend(messages)}
               user={{
-                _id: 1
+                _id: userID,
+                name: name
               }}
             />
             { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null }
