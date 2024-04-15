@@ -36,13 +36,13 @@ const Start = ({ navigation }) => {
           </View>
           <Text style={styles.text}>Choose Background Color:</Text>
           <View style={styles.colorButtons}>
-              <TouchableOpacity style={[styles.colorPick,styles.option1]} onPress={() => setChatColor("#090C08")}>
+              <TouchableOpacity style={[styles.colorPick,styles.option1, chatColor === "#090C08" && styles.selection]} onPress={() => setChatColor("#090C08")}>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.colorPick,styles.option2]} onPress={() => setChatColor("#474056")}>
+              <TouchableOpacity style={[styles.colorPick,styles.option2, chatColor === "#474056" && styles.selection]} onPress={() => setChatColor("#474056")}>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.colorPick,styles.option3]} onPress={() => setChatColor("#8A95A5")}>
+              <TouchableOpacity style={[styles.colorPick,styles.option3, chatColor === "#8A95A5" && styles.selection]} onPress={() => setChatColor("#8A95A5")}>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.colorPick,styles.option4]} onPress={() => setChatColor("#B9C6AE")}>
+              <TouchableOpacity style={[styles.colorPick,styles.option4, chatColor === "#B9C6AE" && styles.selection]} onPress={() => setChatColor("#B9C6AE")}>
               </TouchableOpacity>
           </View>
           <TouchableOpacity 
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
         margin: 10
     },
     option1: {
-        backgroundColor: "#090C08"
+        backgroundColor: "#090C08",
     },
     option2: {
         backgroundColor: "#474056"
@@ -129,6 +129,10 @@ const styles = StyleSheet.create({
     option4: {
         backgroundColor: "#B9C6AE"
     },
+    selection: {
+      borderWidth: 3,
+      borderColor: 'gray'
+    }
   });
 
 export default Start;
